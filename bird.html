@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+<canvas id="cvs" width="800" height="600"></canvas>
+<script src="./getimgobj.js"></script>
+<script src="./unit.js"></script>
+<script src="./bird.js"></script>
+<script src="sky.js"></script>
+<script src="land.js"></script>
+<script src="pipe.js"></script>
+<!--<script src="pp.js"></script>-->
+<script>
+    (function(){
+        var ncvs=document.getElementById("cvs");
+        var ctx=ncvs.getContext("2d");
+        getImgObj(function(imgObj){
+
+            ncvs.addEventListener("click",function(){
+                bird.speed=-2;
+            });
+            //鸟类构造函数
+            Bird.init(imgObj["birds"]);
+            //天空
+            Sky.init(imgObj["sky"]);
+            //大地
+            Land.init(imgObj["land"]);
+            //上管子
+            Pipe.init(imgObj["pipeDown"],imgObj["pipeUp"]);
+
+            //小鸟实例化
+            var bird=new Bird(ncvs,ctx,20,20,52,45);
+
+            var skys=[];
+            for(var i=0;i<2;i++){
+                skys.push(new Sky(ncvs,ctx,imgObj["sky"].width*i));
+            }
+            var lands=[];
+            for(var i=0;i<4;i++){
+                lands.push(new Land(ncvs,ctx,imgObj["land"].width*i));
+            }
+            var pipes=[];
+            for(var i=0;i<6;i++){
+                pipes.push(new Pipe(ncvs,ctx,200+imgObj["pipeDown"].width*3*i));
+            }
+            /* var sky1=new Sky();
+             var sky2=new Sky(800);
+             var land1=new Land();
+             var land2=new Land(336);
+             var land3=new Land(336*2);
+             var land4=new Land(336*3);*/
+
+            /*var pipedown1=new Pipe(200);
+             var pipedown2=new Pipe(200+imgObj["pipeDown"].width*3);
+             var pipedown3=new Pipe(200+imgObj["pipeDown"].width*6);
+             var pipedown4=new Pipe(200+imgObj["pipeDown"].width*9);
+             var pipedown5=new Pipe(200+imgObj["pipeDown"].width*12);
+             var pipedown6=new Pipe(200+imgObj["pipeDown"].width*15);*/
+
+            var timer=setInterval(function(){
+
+                if(ctx.isPointInPath(bird.x+bird.width/2,bird.y+bird.height/2)){
+                    clearInterval(timer);
+                }
+                ctx.clearRect(0,0,ncvs.width,ncvs.height);
+                ctx.beginPath();
+
+                skys.forEach(function(val,index){
+                    val.draw();
+                    val.updata();
+                });
+                pipes.forEach(function(val,index){
+                    val.draw();
+                    val.updata();
+                });
+                lands.forEach(function(val,index){
+                    val.draw();
+                    val.updata();
+                });
+
+
+                bird.draw();
+                bird.updata();
+            },1000/60);
+        });
+
+    }())
+
+</script>
+</body>
+</html>
